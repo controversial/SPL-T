@@ -38,7 +38,7 @@ class Tile:
 
 	@property
 	def xs(self):
-		return zip(*self.coordsEncompassed)[0]
+		return list(zip(*self.coordsEncompassed))[0]
 
 	@property
 	def ys(self):
@@ -82,7 +82,7 @@ class Tile:
 		according to the current split direction of the parent game."""
 		if self.type != 1:
 			if not silent:
-				print "Only standard type blocks can be split!"
+				print("Only standard type blocks can be split!")
 			return False
 
 		x,y,w,h=self.x,self.y,self.w,self.h
@@ -109,7 +109,7 @@ class Tile:
 			self.game.tiles.insert(index, popped)
 
 			if not silent:
-				print popped, 'was too small to be split!'
+				print(popped, 'was too small to be split!')
 				self.game.show()
 			#Report failure
 			return False
@@ -125,10 +125,9 @@ class Tile:
 			self.game.splitsCount+=1
 			#Debug info
 			if not silent:
-				print 'Splitting',popped,'into',[str(t) for t in subTiles]
-				print 'Current points:',self.game.score
+				print('Splitting',popped,'into',[str(t) for t in subTiles])
+				print('Current points:',self.game.score)
 				self.game.show()
-				print
 
 			#Report success
 			return True
@@ -327,7 +326,10 @@ class Game:
 			coords=tile.x*20,tile.y*20,(tile.x+tile.w-1)*22,(tile.y+tile.h-1)*21
 			d.rectangle(coords, fill=color, outline=(255,255,255))
 			if tile.type == 2:
-				d.text(map(sum,zip(coords[:2],(4,3))),str(tile.pointBlockValue))
+				tileCoords = coords[:2]
+				textCoords = tileCoords[0]+4, tileCoords[1]+3
+				
+				d.text(tileCoords, str(tile.pointBlockValue))
 		return im
 
 	def show(self):
@@ -346,5 +348,5 @@ def connectTiles(tiles):
 if __name__ == "__main__":
 	g=Game()
 	#Set of splits to be made
-	for i in range(7)+[-4,-5,-8,-6,0,4,0,-1,-6,-1,-1,-1]:
+	for i in list(range(7))+[-4,-5,-8,-6,0,4,0,-1,-6,-1,-1,-1]:
 		g[i].split(silent=0)
