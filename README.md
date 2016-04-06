@@ -17,6 +17,8 @@ I'm working on this very intermittently, since it's pretty difficult logic-wise 
     - [x] Forming point tiles
     - [x] Falling tiles
     - [ ] New tiles falling from ceiling
+- [ ] Game interface
+    - [ ] Leverage [Pythonista](http://omz-software.com/pythonista/index.html)'s `scene` module to build a touch interface for testing. 
 - [ ] Game solution (either Minimax or Machine Learning)
     - [ ] Creating a method for assigning a numerical value to an arbitrary game state
     - [ ] Building game tree
