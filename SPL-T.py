@@ -63,9 +63,10 @@ class Tile:
 		#In this case, the block has fallen, and is now finished falling.
 		elif self.originFrame is not None:
 			self.originFrame=None
-			#Cut the value in half if it's a point block
+			#Cut the value in half if it's a point block, and add points
 			if self.type==2:
-				self.pointBlockValue -= 1
+				subtractor = int(self.pointBlockValue / 2)
+				self.pointBlockValue -= subtractor
 		#The tile has not, and can not fall
 		else:
 			return False
@@ -109,7 +110,7 @@ class Tile:
 			self.game.tiles.insert(index, popped)
 
 			if not silent:
-				print(popped, 'was too small to be split!')
+				print(str(popped) + ' was too small to be split!')
 				self.game.show()
 			#Report failure
 			return False
@@ -125,8 +126,7 @@ class Tile:
 			self.game.splitsCount+=1
 			#Debug info
 			if not silent:
-				print('Splitting',popped,'into',[str(t) for t in subTiles])
-				print('Current points:',self.game.score)
+				print('Splitting ' + str(popped) + ' into ' + str([str(t) for t in subTiles]))
 				self.game.show()
 
 			#Report success
@@ -279,6 +279,7 @@ class Game:
 									break
 		#Remove any accidental duplicates
 		self.pointBlocks=list(set(self.pointBlocks))
+		self.score += len(pointBlocks)
 
 	def fallBlocks(self):
 		"""Make blocks fall."""
@@ -316,20 +317,27 @@ class Game:
 	def img(self):
 		"""Return a PIL image for a graphical representation of the game. Useful
 		for easily visualizing a game state while debugging."""
-		im = Image.new("RGB", (160, 320))
+		im = Image.new("RGB", (160, 340))
 		d=ImageDraw.Draw(im)
+		# Draw tiles
 		for tile in self.tiles:
 			if tile.type == 1:
 				color=(0,0,0)
 			else:
 				color=(100,100,100)
-			coords=tile.x*20,tile.y*20,(tile.x+tile.w-1)*22,(tile.y+tile.h-1)*21
+			coords=tile.x*20,tile.y*20+20,(tile.x+tile.w-1)*22,(tile.y+tile.h-1)*21+20
 			d.rectangle(coords, fill=color, outline=(255,255,255))
 			if tile.type == 2:
-				tileCoords = coords[:2]
-				textCoords = tileCoords[0]+4, tileCoords[1]+3
+				corner = coords[:2]
+				textCoords = corner[0]+4, corner[1]+3
 				
-				d.text(tileCoords, str(tile.pointBlockValue))
+				d.text(textCoords, str(tile.pointBlockValue))
+		# Draw score
+		d.text((0,0),str(self.score))
+		# Draw split count
+		d.text((130,0), str(self.splitsCount))
+		# Draw a line separating the game from the info
+		d.line((0,13,160,13),'#fff')
 		return im
 
 	def show(self):
